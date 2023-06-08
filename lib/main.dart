@@ -1,3 +1,4 @@
+import 'package:expenses/components/chart.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import './components/transaction_form.dart';
@@ -14,9 +15,10 @@ class ExpensesApp extends StatelessWidget {
     return MaterialApp(
       home: const MyHomePage(),
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.red)
-            .copyWith(secondary: Colors.amber),
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange)
+            .copyWith(secondary: Colors.orange),
         fontFamily: 'Quicksand',
+        textTheme: ThemeData.light().textTheme.copyWith(),
       ),
     );
   }
@@ -31,19 +33,27 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _transactions = [
-    // Transaction(
-    //   id: 'T1',
-    //   title: 'Tênis de corrida',
-    //   value: 310.80,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 'T2',
-    //   title: 'Conta de Luz',
-    //   value: 211.75,
-    //   date: DateTime.now(),
-    // ),
+    Transaction(
+      id: 't0',
+      title: 'Tênis de corrida',
+      value: 310.80,
+      date: DateTime.now().subtract(const Duration(days: 33)),
+    ),
+    Transaction(
+      id: 't1',
+      title: 'Conta de Luz',
+      value: 211.75,
+      date: DateTime.now().subtract(const Duration(days: 3)),
+    ),
   ];
+
+  List<Transaction> get recentTransaction {
+    return _transactions.where((tr) {
+      return tr.date.isAfter(DateTime.now().subtract(
+        const Duration(days: 7),
+      ));
+    }).toList();
+  }
 
   _addTransaction(String title, double value) {
     final newTransaction = Transaction(
@@ -92,14 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            const SizedBox(
-              width: double.infinity,
-              child: Card(
-                color: Colors.amberAccent,
-                elevation: 5,
-                child: Text('Gráfico'),
-              ),
-            ),
+            Chart(recentTransaction),
             TransactionsList(_transactions),
           ],
         ),
